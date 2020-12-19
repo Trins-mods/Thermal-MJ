@@ -1,0 +1,200 @@
+buildscript {
+    repositories {
+        jcenter()
+        maven { url = "http://files.minecraftforge.net/maven" }
+        maven { url "http://repo.spongepowered.org/maven" }
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+        classpath "org.spongepowered:mixingradle:0.6-SNAPSHOT"
+        classpath "com.github.jengelman.gradle.plugins:shadow:2.0.4"
+    }
+}
+apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: "org.spongepowered.mixin"
+apply plugin: "com.github.johnrengelman.shadow"
+//Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
+
+
+version = "${mod_version}"
+group = "trinsdar.thermal_mj" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+archivesBaseName = "Thermal MJ"
+
+
+
+sourceCompatibility = targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
+
+
+compileJava {
+    sourceCompatibility = targetCompatibility = '1.8'
+}
+
+minecraft {
+    version = "${forgemc_version}-${forge_version}"
+    runDir = "run"
+    mappings = "${mappings_version}"
+    coreMod = "trinsdar.thermal_mj.asm.ThermalMJLoadingPlugin"
+
+    replace "@VERSION@", project.version
+    replaceIn "ThermalMJ.java"
+
+}
+
+repositories{
+    maven { url "https://dist.creeper.host/Sponge/maven" }
+    maven { // JEI
+        name 'DVS1 Maven FS'
+        url 'http://dvs1.progwml6.com/files/maven/'
+    }
+    maven { // The One Probe
+        name 'tterrag'
+        url 'http://maven.tterrag.com/'
+    }
+    maven { // CCL, CCC, NEI
+        name 'Chickenbones Repo'
+        url 'http://chickenbones.net/maven/'
+    }
+    maven { // Tesla
+        name 'MMD'
+        url 'https://maven.mcmoddev.com/'
+    }
+    maven {
+        name = "jared"
+        url = "http://maven.blamejared.com"
+    }
+    maven { // CoFH
+        name 'Covers Maven'
+        url 'http://maven.covers1624.net/'
+    }
+    maven {
+        name = "buildcraft"
+        url = "http://www.mod-buildcraft.com/maven/"
+    }
+
+}
+
+dependencies {
+    implementation 'org.jetbrains:annotations:19.0.0'
+    compile("org.spongepowered:mixin:0.8-SNAPSHOT"){
+        exclude module: "asm-commons"
+        exclude module: "asm-tree"
+        exclude module: "launchwrapper"
+        exclude module: "guava"
+        exclude module: "log4j-core"
+        exclude module: "gson"
+        exclude module: "commons-io"
+    }
+    deobfProvided "mezz.jei:jei_${forgemc_version}:${jei_version}:api"
+    runtime "mezz.jei:jei_${forgemc_version}:${jei_version}"
+    //one probe
+    deobfProvided "mcjty.theoneprobe:TheOneProbe-${mc_version}:${mc_version}-${top_version}"
+    runtime "mcjty.theoneprobe:TheOneProbe-${mc_version}:${mc_version}-${top_version}"
+    deobfCompile(group: 'CraftTweaker2', name: 'ZenScript', version: craft_tweaker_version) {
+        exclude group: 'org.ow2.asm'
+        exclude group: 'com.google.code.gson'
+    }
+    deobfCompile(group: 'CraftTweaker2', name: 'CraftTweaker2-API', version: craft_tweaker_version) {
+        exclude group: 'org.ow2.asm'
+        exclude group: 'com.google.code.gson'
+    }
+    deobfCompile(group: 'CraftTweaker2', name: 'CraftTweaker2-MC1120-Main', version: "1.12-${craft_tweaker_version}") {
+        exclude group: 'org.ow2.asm'
+        exclude group: 'com.google.code.gson'
+    }
+
+     deobfProvided ("cofh:CoFHCore:${forgemc_version}-${cofhcore_version}:universal") {
+         exclude group: 'mezz.jei'
+     }
+
+     runtime ("cofh:CoFHCore:${forgemc_version}-${cofhcore_version}:universal") {
+         exclude group: 'mezz.jei'
+     }
+     runtime ("cofh:RedstoneFlux:1.12-2.1.0.7:universal") {
+         exclude group: 'mezz.jei'
+     }
+     runtime ("cofh:CoFHWorld:${forgemc_version}-${cofhworld_version}:universal") {
+         exclude group: 'mezz.jei'
+     }
+     runtime ("cofh:ThermalFoundation:${forgemc_version}-${thermal_foundation_version}:universal") {
+         exclude group: 'cofh'
+         exclude group: 'mezz.jei'
+     }
+     runtime ("cofh:ThermalExpansion:${forgemc_version}-${thermal_expansion_version}:universal") {
+         exclude group: 'codechicken'
+         exclude group: 'cofh'
+         exclude group: 'mezz.jei'
+     }
+
+    deobfCompile("com.mod-buildcraft:buildcraft-main:7.99.24.1")
+
+}
+
+processResources {
+    // this will ensure that this task is redone when the versions change.
+    inputs.property "modversion", "${mod_version}"
+    inputs.property "mcversion", "${mc_version}"
+
+    // replace stuff in mcmod.info, nothing else
+    from(sourceSets.main.resources.srcDirs) {
+        include 'mcmod.info'
+                
+        // replace version and mcversion
+        expand 'modversion':"${mod_version}", 'mcversion':"${mc_version}"
+    }
+        
+    // copy everything else except the mcmod.info
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'mcmod.info'
+    }
+}
+
+mixin {
+    add sourceSets.main, "mixins.thermal_mj.refmap.json"
+}
+
+reobf {
+    shadowJar {
+        mappingType = "SEARGE"
+    }
+}
+
+jar {
+    classifier "thin"
+    manifest.attributes(
+            "FMLCorePlugin": "trinsdar.thermal_mj.asm.Ic2cExtrasLoadingPlugin",
+            "FMLCorePluginContainsFMLMod": true,
+            "TweakClass": "org.spongepowered.asm.launch.MixinTweaker",
+            'ForceLoadAsMod': true,
+            "TweakOrder": 0,
+            "MixinConfigs": "mixins.thermal_mj.json"
+    )
+}
+
+shadowJar {
+    classifier ""
+    exclude "LICENSE.txt", "dummyThing"
+    dependencies {
+        include dependency('org.spongepowered:mixin')
+    }
+}
+
+task deobfJar(type: Jar) {
+    from sourceSets.main.output
+    classifier = 'deobf'
+    manifest.attributes(
+            "FMLCorePlugin": "trinsdar.thermal_mj.asm.Ic2cExtrasLoadingPlugin",
+            "FMLCorePluginContainsFMLMod": true,
+            "TweakClass": "org.spongepowered.asm.launch.MixinTweaker",
+            "TweakOrder": 0,
+            "MixinConfigs": "mixins.thermal_mj.json"
+    )
+}
+
+artifacts {
+    archives jar
+    archives shadowJar
+    archives deobfJar
+}

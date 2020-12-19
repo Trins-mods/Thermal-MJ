@@ -1,0 +1,14 @@
+{
+  "package": "trinsdar.thermal_mj.asm.mixins",
+  "required": true,
+  "refmap": "mixins.thermal_mj.refmap.json",
+  "target": "@env(DEFAULT)",
+  "minVersion": "0.6",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "MixinItemArmorNuclearJetpack"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
