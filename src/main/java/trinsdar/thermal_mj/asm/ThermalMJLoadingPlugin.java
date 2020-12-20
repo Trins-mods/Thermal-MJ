@@ -16,12 +16,19 @@ import java.util.Map;
 @IFMLLoadingPlugin.SortingIndex(1001)
 public class ThermalMJLoadingPlugin implements IFMLLoadingPlugin {
     public ThermalMJLoadingPlugin(){
+        boolean thermal = false;
+        boolean cofhcore = false;
         try {
             File mods = new File("./mods");
             for (File file : mods.listFiles()){
-                if (file.getName().startsWith("IC2Classic 1.12") || file.getName().startsWith("IC2Classic+1.12")){
+                if (file.getName().startsWith("ThermalExpansion")){
                     loadModJar(file);
-                    break;
+                    thermal = true;
+                    continue;
+                }
+                if (file.getName().startsWith("CoFHCore")){
+                    loadModJar(file);
+                    cofhcore = true;
                 }
             }
         } catch (Exception e) {

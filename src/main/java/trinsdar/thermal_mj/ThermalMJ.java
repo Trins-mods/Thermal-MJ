@@ -1,5 +1,6 @@
 package trinsdar.thermal_mj;
 
+import cofh.CoFHCore;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -11,7 +12,7 @@ public class ThermalMJ {
     public static final String MODID = "thermal_mj";
     public static final String NAME = "Thermal MJ";
     public static final String VERSION = "@VERSION@";
-    public static final String DEPENDS = "required-after:cofh-core";
+    public static final String DEPENDS = CoFHCore.VERSION_GROUP;
 
     @Mod.Instance
     public static ThermalMJ instance;
