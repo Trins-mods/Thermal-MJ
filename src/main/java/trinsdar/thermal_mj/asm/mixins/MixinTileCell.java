@@ -35,13 +35,6 @@ public abstract class MixinTileCell extends TilePowered implements IMjPassivePro
         return capability == CapabilityEnergy.ENERGY || capability == MjAPI.CAP_RECEIVER || capability == MjAPI.CAP_CONNECTOR || capability == MjAPI.CAP_PASSIVE_PROVIDER || capability == MjAPI.CAP_READABLE || super.hasCapability(capability, from);
     }
 
-    @Inject(method = "update", at = @At("HEAD"))
-    private void outputPower(CallbackInfo info){
-        if (redstoneControlOrDisable()){
-            sendPower();
-        }
-    }
-
     @Inject(method = "getCapability", at = @At("HEAD"), cancellable = true, remap = false)
     public <T> T getCaps(Capability<T> capability, EnumFacing from, CallbackInfoReturnable<T> info){
         T cap = null;
@@ -71,11 +64,6 @@ public abstract class MixinTileCell extends TilePowered implements IMjPassivePro
         return cap;
     }
 
-    public TileEngineBase_BC8.ITileBuffer getTileBuffer(EnumFacing side) {
-        TileEntity tile = world.getTileEntity(getPos().offset(side));
-        return () -> tile;
-    }
-
     public IMjReceiver getReceiverToPower(TileEntity tile, EnumFacing side) {
         if (tile == null) return null;
         IMjReceiver rec = tile.getCapability(MjAPI.CAP_RECEIVER, side.getOpposite());
@@ -86,20 +74,15 @@ public abstract class MixinTileCell extends TilePowered implements IMjPassivePro
         }
     }
 
-    private long getPowerToExtract(boolean doExtract, EnumFacing currentDirection) {
-        TileEntity tile = getTileBuffer(currentDirection).getTile();
-
+    private long getPowerToExtract(EnumFacing currentDirection) {
+        TileEntity tile = world.getTileEntity(getPos().offset(currentDirection));
         if (tile == null) return 0;
-
-
-
         IMjReceiver receiver = getReceiverToPower(tile, currentDirection);
         if (receiver == null) {
             return 0;
         }
-
         // Pulsed power
-        return extractPower(0, receiver.getPowerRequested(), doExtract);
+        return extractPower(0, receiver.getPowerRequested(), false);
         // TODO: Use this:
         // return extractPower(receiver.getMinPowerReceived(), receiver.getMaxPowerReceived(), false);
 
@@ -107,19 +90,20 @@ public abstract class MixinTileCell extends TilePowered implements IMjPassivePro
         // return extractEnergy(0, getActualOutput(), false); // Uncomment for constant power
     }
 
-    private void sendPower() {
+    @Inject(method = "transferEnergy", at = @At("HEAD"), remap = false)
+    private void sendPower(CallbackInfo info) {
         for (EnumFacing facing : EnumFacing.VALUES){
             if (sideCache[facing.ordinal()] == 2){
-                TileEntity tile = getTileBuffer(facing).getTile();
+                TileEntity tile = world.getTileEntity(getPos().offset(facing));
                 if (tile == null) {
                     continue;
                 }
                 IMjReceiver receiver = getReceiverToPower(tile, facing);
                 if (receiver != null) {
-                    long extracted = getPowerToExtract(true, facing);
+                    long extracted = getPowerToExtract(facing);
                     if (extracted > 0) {
                         long excess = receiver.receivePower(extracted, false);
-                        extractPower(extracted - excess, extracted - excess, false); // Comment out for constant power
+                        //extractPower(extracted - excess, extracted - excess, false); // Comment out for constant power
                         // currentOutput = extractEnergy(0, needed, true); // Uncomment for constant power
                     }
                 }

@@ -141,6 +141,16 @@ dependencies {
          exclude group: 'cofh'
          exclude group: 'mezz.jei'
      }
+    deobfProvided ("cofh:ThermalDynamics:${forgemc_version}-${thermal_dynamics_version}:universal") {
+        exclude group: 'codechicken'
+        exclude group: 'cofh'
+        exclude group: 'mezz.jei'
+    }
+    runtime ("cofh:ThermalDynamics:${forgemc_version}-${thermal_dynamics_version}:universal") {
+        exclude group: 'codechicken'
+        exclude group: 'cofh'
+        exclude group: 'mezz.jei'
+    }
 
     deobfCompile("com.mod-buildcraft:buildcraft-main:7.99.24.1")
 
