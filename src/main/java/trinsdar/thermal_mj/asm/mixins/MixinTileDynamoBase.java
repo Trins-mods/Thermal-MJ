@@ -78,7 +78,6 @@ public abstract class MixinTileDynamoBase extends TileInventory implements IMjPa
         EnumFacing facing = EnumFacing.getFront(this.getFacing());
         TileEntity tile = world.getTileEntity(getPos().offset(facing));
         if (tile == null) {
-            CoFHCore.LOG.info("tile null");
             return;
         }
         IMjReceiver receiver = getReceiverToPower(tile, facing);
@@ -94,7 +93,8 @@ public abstract class MixinTileDynamoBase extends TileInventory implements IMjPa
 
     @Override
     public boolean canConnect(@NotNull IMjConnector other) {
-        return world.getTileEntity(pos.offset(EnumFacing.getFront(getFacing()))) == other;
+        return true;
+        //return world.getTileEntity(pos.offset(EnumFacing.getFront(getFacing()))) == other;
     }
 
     @Override
