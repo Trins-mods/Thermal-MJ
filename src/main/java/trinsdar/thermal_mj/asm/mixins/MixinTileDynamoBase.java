@@ -12,6 +12,7 @@ import cofh.thermalexpansion.block.dynamo.TileDynamoBase;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.energy.CapabilityEnergy;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -49,6 +50,7 @@ public abstract class MixinTileDynamoBase extends TileInventory implements IMjPa
 
     public IMjReceiver getReceiverToPower(TileEntity tile, EnumFacing side) {
         if (tile == null) return null;
+        if (tile.hasCapability(CapabilityEnergy.ENERGY, side.getOpposite())) return null;
         IMjReceiver rec = tile.getCapability(MjAPI.CAP_RECEIVER, side.getOpposite());
         if (rec != null && rec.canConnect(this) && this.canConnect(rec)) {
             return rec;

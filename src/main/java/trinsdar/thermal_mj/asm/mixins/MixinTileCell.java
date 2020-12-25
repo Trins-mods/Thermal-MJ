@@ -66,6 +66,7 @@ public abstract class MixinTileCell extends TilePowered implements IMjPassivePro
 
     public IMjReceiver getReceiverToPower(TileEntity tile, EnumFacing side) {
         if (tile == null) return null;
+        if (tile.hasCapability(CapabilityEnergy.ENERGY, side.getOpposite())) return null;
         IMjReceiver rec = tile.getCapability(MjAPI.CAP_RECEIVER, side.getOpposite());
         if (rec != null && rec.canConnect(this) && this.canConnect(rec)) {
             return rec;
