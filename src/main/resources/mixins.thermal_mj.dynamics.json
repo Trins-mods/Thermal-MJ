@@ -6,9 +6,7 @@
   "minVersion": "0.6",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "MixinTilePowered",
-    "MixinTileCell",
-    "MixinTileDynamoBase"
+    "MixinDuctUnitEnergy"
   ],
   "injectors": {
     "defaultRequire": 1

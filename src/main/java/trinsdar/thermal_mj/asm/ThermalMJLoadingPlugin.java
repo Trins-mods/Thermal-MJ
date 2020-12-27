@@ -2,10 +2,12 @@ package trinsdar.thermal_mj.asm;
 
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.common.ForgeVersion;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.relauncher.CoreModManager;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.launch.MixinBootstrap;
+import org.spongepowered.asm.mixin.MixinEnvironment;
 import org.spongepowered.asm.mixin.Mixins;
 
 import java.io.File;
@@ -17,7 +19,6 @@ import java.util.Map;
 public class ThermalMJLoadingPlugin implements IFMLLoadingPlugin {
     public ThermalMJLoadingPlugin(){
         boolean thermal = false;
-        boolean cofhcore = false;
         try {
             File mods = new File("./mods");
             for (File file : mods.listFiles()){
@@ -28,14 +29,16 @@ public class ThermalMJLoadingPlugin implements IFMLLoadingPlugin {
                 }
                 if (file.getName().startsWith("CoFHCore")){
                     loadModJar(file);
-                    cofhcore = true;
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         MixinBootstrap.init();
-        Mixins.addConfiguration("mixins.thermal_mj.json");
+        Mixins.addConfiguration("mixins.thermal_mj.core.json");
+        if (thermal){
+            Mixins.addConfiguration("mixins.thermal_mj.expansion.json");
+        }
     }
 
     @Override

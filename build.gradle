@@ -192,8 +192,7 @@ jar {
             "FMLCorePluginContainsFMLMod": true,
             "TweakClass": "org.spongepowered.asm.launch.MixinTweaker",
             'ForceLoadAsMod': true,
-            "TweakOrder": 0,
-            "MixinConfigs": "mixins.thermal_mj.json"
+            "TweakOrder": 0
     )
 }
 
@@ -212,8 +211,7 @@ task deobfJar(type: Jar) {
             "FMLCorePlugin": "trinsdar.thermal_mj.asm.Ic2cExtrasLoadingPlugin",
             "FMLCorePluginContainsFMLMod": true,
             "TweakClass": "org.spongepowered.asm.launch.MixinTweaker",
-            "TweakOrder": 0,
-            "MixinConfigs": "mixins.thermal_mj.json"
+            "TweakOrder": 0
     )
 }
 
