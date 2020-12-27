@@ -19,16 +19,18 @@ import java.util.Map;
 public class ThermalMJLoadingPlugin implements IFMLLoadingPlugin {
     public ThermalMJLoadingPlugin(){
         boolean thermal = false;
+        boolean core = false;
         try {
             File mods = new File("./mods");
             for (File file : mods.listFiles()){
-                if (file.getName().startsWith("ThermalExpansion")){
+                if (file.getName().startsWith("ThermalExpansion") && !thermal){
                     loadModJar(file);
                     thermal = true;
                     continue;
                 }
-                if (file.getName().startsWith("CoFHCore")){
+                if (file.getName().startsWith("CoFHCore") && !core){
                     loadModJar(file);
+                    core = true;
                 }
             }
         } catch (Exception e) {
